@@ -1,0 +1,22 @@
+{% extends 'incidencias/base.html' %}
+
+{% block title %}Mis incidencias{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Listado de incidencias</h2>
+    {% if incidencias %}
+        <ul class="list-group mt-3">
+            {% for incidencia in incidencias %}
+            <li class="list-group-item">
+                <strong>{{ incidencia.titulo }}</strong><br>
+                {{ incidencia.descripcion }}<br>
+                <small class="text-muted">Creada por: {{ incidencia.creada_por.username }} | {{ incidencia.fecha_creacion }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay incidencias registradas.</p>
+    {% endif %}
+</div>
+{% endblock %}
