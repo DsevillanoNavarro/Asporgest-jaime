@@ -4,7 +4,11 @@ from .models import Incidencia
 class IncidenciaForm(forms.ModelForm):
     class Meta:
         model = Incidencia
-        fields = '__all__'
+        fields = [
+            'centro', 'fecha', 'urgencia', 'prioridad', 'relativa',
+            'descripcion', 'telefono_contacto'
+        ]
+
         exclude = ['creada_por', 'fecha_creacion', 'vista_por_admin']
         widgets = {
             'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),

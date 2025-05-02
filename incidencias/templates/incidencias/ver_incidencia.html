@@ -1,0 +1,28 @@
+{% extends 'incidencias/base.html' %}
+{% block title %}Detalle de Incidencia{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-primary mb-4">Detalle de la Incidencia</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">{{ incidencia.get_relativa_display }}</h5>
+
+            <p class="card-text"><strong>Centro:</strong> {{ incidencia.centro }}</p>
+            <p class="card-text"><strong>Fecha:</strong> {{ incidencia.fecha|date:"d/m/Y" }}</p>
+            <p class="card-text"><strong>Urgente:</strong> {{ incidencia.urgencia|yesno:"Sí,No" }}</p>
+            <p class="card-text"><strong>Prioridad:</strong> {{ incidencia.prioridad }}</p>
+            <p class="card-text"><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
+            <p class="card-text"><strong>Teléfono de contacto:</strong> {{ incidencia.telefono_contacto }}</p>
+            <p class="card-text"><strong>Creada por:</strong> {{ incidencia.creada_por.username }}</p>
+            <p class="card-text text-muted">
+                <strong>Fecha de creación:</strong>
+                {{ incidencia.fecha_creacion|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}
+            </p>
+
+            <a href="{% url 'listar_incidencias' %}" class="btn btn-outline-primary mt-3">Volver al listado</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

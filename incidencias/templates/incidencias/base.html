@@ -57,7 +57,7 @@
                         <li><a class="dropdown-item" href="{% url 'crear_incidencia' %}">Crear incidencia</a></li>
                         {% if request.user.is_superuser %}
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Gestionar incidencias</a></li>
+                        <li><a class="dropdown-item" href="{% url 'listar_incidencias' %}">Gestionar incidencias</a></li>
                         {% endif %}
                     </ul>
                 </li>

@@ -1,7 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import redirect, render
 from .models import Incidencia
 from .forms import IncidenciaForm
 
@@ -58,3 +57,20 @@ def crear_incidencia(request):
         form = IncidenciaForm()
     
     return render(request, 'incidencias/crear_incidencia.html', {'form': form})
+
+@login_required
+def ver_incidencia(request, id):
+    incidencia = get_object_or_404(Incidencia, id=id)
+    return render(request, 'incidencias/ver_incidencia.html', {'incidencia': incidencia})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def eliminar_incidencia(request, id):
+    incidencia = get_object_or_404(Incidencia, id=id)
+    incidencia.delete()
+    return redirect('listar_incidencias')
+
+@login_required
+def ver_incidencia(request, id):
+    incidencia = get_object_or_404(Incidencia, id=id)
+    return render(request, 'incidencias/ver_incidencia.html', {'incidencia': incidencia})
