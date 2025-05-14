@@ -1,32 +1,51 @@
 {% extends 'incidencias/base.html' %}
-{% block title %}Listado de Incidencias{% endblock %}
+{% block title %}Gestionar Incidencias{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Listado de incidencias</h2>
-
-    {% if incidencias %}
-    {% for incidencia in incidencias %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">{{ incidencia.get_relativa_display }}</h5>
-            <p class="card-text"><strong>Centro:</strong> {{ incidencia.centro }}</p>
-            <p class="card-text"><strong>Urgente:</strong> {{ incidencia.urgencia|yesno:"Sí,No" }}</p>
-            <p class="card-text"><strong>Prioridad:</strong> {{ incidencia.prioridad }}</p>
-            <p class="card-text"><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
-            <p class="card-text"><strong>Teléfono de contacto:</strong> {{ incidencia.telefono_contacto }}</p>
-            <p class="card-text text-muted">Creada por: {{ incidencia.creada_por }} | {{ incidencia.fecha_creacion|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}</p>
-            
-            <a href="{% url 'ver_incidencia' incidencia.id %}" class="btn btn-outline-primary btn-sm mt-2">Ver detalles</a>
-    
-            {% if request.user.is_superuser %}
-            <a href="{% url 'eliminar_incidencia' incidencia.id %}" class="btn btn-outline-danger btn-sm mt-2 ms-2">Eliminar</a>
-            {% endif %}
+    <h2 class="text-primary">Incidencias nuevas</h2>
+    {% for incidencia in nuevas %}
+        <div class="card my-2">
+            <div class="card-body">
+                <strong>{{ incidencia.creada_por }}:</strong> {{ incidencia.descripcion|truncatechars:100 }}
+                <div class="mt-2">
+                    <a href="{% url 'ver_incidencia' incidencia.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                    <a href="{% url 'modificar_incidencia' incidencia.id %}" class="btn btn-sm btn-warning">Modificar</a>
+                </div>
+            </div>
         </div>
-    </div>
+    {% empty %}
+        <p class="text-muted">No hay incidencias nuevas.</p>
     {% endfor %}
-    {% else %}
-        <div class="alert alert-info text-center">No hay incidencias registradas.</div>
-    {% endif %}
+
+    <h2 class="text-primary mt-4">Incidencias en curso</h2>
+    {% for incidencia in en_curso %}
+        <div class="card my-2">
+            <div class="card-body">
+                <strong>{{ incidencia.creada_por }}:</strong> {{ incidencia.descripcion|truncatechars:100 }}
+                <div class="mt-2">
+                    <a href="{% url 'ver_incidencia' incidencia.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                    <a href="{% url 'modificar_incidencia' incidencia.id %}" class="btn btn-sm btn-warning">Modificar</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No hay incidencias en curso.</p>
+    {% endfor %}
+
+    <h2 class="text-primary mt-4">Incidencias cerradas</h2>
+    {% for incidencia in cerradas %}
+        <div class="card my-2">
+            <div class="card-body">
+                <strong>{{ incidencia.creada_por }}:</strong> {{ incidencia.descripcion|truncatechars:100 }}
+                <div class="mt-2">
+                    <a href="{% url 'ver_incidencia' incidencia.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                    <a href="{% url 'modificar_incidencia' incidencia.id %}" class="btn btn-sm btn-warning">Modificar</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No hay incidencias cerradas.</p>
+    {% endfor %}
 </div>
 {% endblock %}

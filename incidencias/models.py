@@ -48,6 +48,13 @@ class Incidencia(models.Model):
         ('9', 'Otro'),
     ]
     PRIORIDADES = [('Baja', 'Baja'), ('Media', 'Media'), ('Alta', 'Alta')]
+    
+    ESTADOS = [
+    ('nueva', 'Nueva'),
+    ('en_curso', 'En curso'),
+    ('cerrada', 'Cerrada'),
+    ]
+
 
     # Comunes
     centro = models.CharField(max_length=50, choices=CENTROS, default='CENTRAL')
@@ -106,6 +113,9 @@ class Incidencia(models.Model):
     creada_por = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     vista_por_admin = models.BooleanField(default=False)
+
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='nueva')
+    observaciones = models.TextField(blank=True, default='')
 
     def __str__(self):
         return f"{self.get_relativa_display()} ({self.creada_por.username})"

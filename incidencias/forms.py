@@ -58,3 +58,12 @@ class IncidenciaForm(forms.ModelForm):
             'otorgar_fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'otorgar_urgente': forms.RadioSelect(choices=[(True, 'Sí'), (False, 'No')]),
         }
+
+class GestionIncidenciaForm(forms.ModelForm):
+    class Meta:
+        model = Incidencia
+        fields = ['estado', 'observaciones']
+        widgets = {
+            'estado': forms.Select(attrs={'class': 'form-select'}),
+            'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }

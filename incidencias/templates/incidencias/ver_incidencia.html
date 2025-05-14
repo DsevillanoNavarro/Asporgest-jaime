@@ -3,25 +3,143 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-primary mb-4">Detalle de la Incidencia</h2>
+    <h2 class="text-primary mb-4">Detalle completo de la Incidencia</h2>
 
-    <div class="card shadow-sm">
+    <div class="card shadow">
         <div class="card-body">
             <h5 class="card-title">{{ incidencia.get_relativa_display }}</h5>
 
-            <p class="card-text"><strong>Centro:</strong> {{ incidencia.centro }}</p>
-            <p class="card-text"><strong>Fecha:</strong> {{ incidencia.fecha|date:"d/m/Y" }}</p>
-            <p class="card-text"><strong>Urgente:</strong> {{ incidencia.urgencia|yesno:"Sí,No" }}</p>
-            <p class="card-text"><strong>Prioridad:</strong> {{ incidencia.prioridad }}</p>
-            <p class="card-text"><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
-            <p class="card-text"><strong>Teléfono de contacto:</strong> {{ incidencia.telefono_contacto }}</p>
-            <p class="card-text"><strong>Creada por:</strong> {{ incidencia.creada_por.username }}</p>
-            <p class="card-text text-muted">
-                <strong>Fecha de creación:</strong>
-                {{ incidencia.fecha_creacion|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}
+            <p><strong>Centro:</strong> {{ incidencia.centro }}</p>
+            <p><strong>Fecha de incidencia:</strong> {{ incidencia.fecha|date:"d/m/Y" }}</p>
+            <p><strong>Urgente:</strong> {{ incidencia.urgencia|yesno:"Sí,No" }}</p>
+            <p><strong>Prioridad:</strong> {{ incidencia.prioridad }}</p>
+            <p><strong>Estado:</strong> {{ incidencia.get_estado_display }}</p>
+            <p><strong>Teléfono de contacto:</strong> {{ incidencia.telefono_contacto }}</p>
+            <p><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
+
+            {% if incidencia.imei %}
+            <p><strong>IMEI / Etiqueta:</strong> {{ incidencia.imei }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_incidencia_telefono %}
+            <p><strong>Tipo incidencia teléfono:</strong> {{ incidencia.tipo_incidencia_telefono }}</p>
+            {% endif %}
+
+            {% if incidencia.numero_serie %}
+            <p><strong>Nº Serie:</strong> {{ incidencia.numero_serie }}</p>
+            {% endif %}
+
+            {% if incidencia.sesion %}
+            <p><strong>Sesión:</strong> {{ incidencia.sesion }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_incidencia_ordenador %}
+            <p><strong>Tipo incidencia ordenador:</strong> {{ incidencia.tipo_incidencia_ordenador }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_incidencia_internet %}
+            <p><strong>Tipo incidencia internet:</strong> {{ incidencia.tipo_incidencia_internet }}</p>
+            {% endif %}
+
+            {% if incidencia.fecha_inicio_incidencia %}
+            <p><strong>Inicio incidencia:</strong> {{ incidencia.fecha_inicio_incidencia }}</p>
+            {% endif %}
+
+            {% if incidencia.cuenta_gsuite %}
+            <p><strong>Cuenta GSuite:</strong> {{ incidencia.cuenta_gsuite }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_incidencia_gsuite %}
+            <p><strong>Tipo incidencia GSuite:</strong> {{ incidencia.tipo_incidencia_gsuite }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_incidencia_impresora %}
+            <p><strong>Tipo incidencia impresora:</strong> {{ incidencia.tipo_incidencia_impresora }}</p>
+            {% endif %}
+
+            {% if incidencia.trabajador_plataforma %}
+            <p><strong>Trabajador plataforma:</strong> {{ incidencia.trabajador_plataforma }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_incidencia_plataforma %}
+            <p><strong>Tipo incidencia plataforma:</strong> {{ incidencia.tipo_incidencia_plataforma }}</p>
+            {% endif %}
+
+            {% if incidencia.trabajador_dispositivo %}
+            <p><strong>Nombre trabajador dispositivo:</strong> {{ incidencia.trabajador_dispositivo }}</p>
+            {% endif %}
+
+            {% if incidencia.contacto_dispositivo %}
+            <p><strong>Contacto trabajador dispositivo:</strong> {{ incidencia.contacto_dispositivo }}</p>
+            {% endif %}
+
+            {% if incidencia.cuenta_dispositivo %}
+            <p><strong>Cuenta corporativa dispositivo:</strong> {{ incidencia.cuenta_dispositivo }}</p>
+            {% endif %}
+
+            {% if incidencia.tipo_solicitud_dispositivo %}
+            <p><strong>Tipo solicitud dispositivo:</strong> {{ incidencia.tipo_solicitud_dispositivo }}</p>
+            {% endif %}
+
+            {% if incidencia.imei_personal %}
+            <p><strong>IMEI personal:</strong> {{ incidencia.imei_personal }}</p>
+            {% endif %}
+
+            {% if incidencia.modelo_personal %}
+            <p><strong>Modelo dispositivo personal:</strong> {{ incidencia.modelo_personal }}</p>
+            {% endif %}
+
+            {% if incidencia.motivo_intervencion %}
+            <p><strong>Motivo de intervención:</strong> {{ incidencia.motivo_intervencion }}</p>
+            {% endif %}
+
+            {% if incidencia.intervencion_solicitada %}
+            <p><strong>Intervención solicitada:</strong> {{ incidencia.intervencion_solicitada }}</p>
+            {% endif %}
+
+            {% if incidencia.centro_anide %}
+            <p><strong>Centro ANIDE:</strong> {{ incidencia.centro_anide }}</p>
+            {% endif %}
+
+            {% if incidencia.puesto_trabajo %}
+            <p><strong>Puesto de trabajo:</strong> {{ incidencia.puesto_trabajo }}</p>
+            {% endif %}
+
+            {% if incidencia.eliminar_nombre %}
+            <p><strong>Eliminar accesos - Nombre:</strong> {{ incidencia.eliminar_nombre }}</p>
+            {% endif %}
+
+            {% if incidencia.eliminar_fecha %}
+            <p><strong>Eliminar accesos - Fecha intervención:</strong> {{ incidencia.eliminar_fecha }}</p>
+            {% endif %}
+
+            {% if incidencia.eliminar_urgente != None %}
+            <p><strong>Eliminar accesos - Urgente:</strong> {{ incidencia.eliminar_urgente|yesno:"Sí,No" }}</p>
+            {% endif %}
+
+            {% if incidencia.otorgar_nombre %}
+            <p><strong>Otorgar accesos - Nombre:</strong> {{ incidencia.otorgar_nombre }}</p>
+            {% endif %}
+
+            {% if incidencia.otorgar_fecha %}
+            <p><strong>Otorgar accesos - Fecha intervención:</strong> {{ incidencia.otorgar_fecha }}</p>
+            {% endif %}
+
+            {% if incidencia.otorgar_urgente != None %}
+            <p><strong>Otorgar accesos - Urgente:</strong> {{ incidencia.otorgar_urgente|yesno:"Sí,No" }}</p>
+            {% endif %}
+
+            <hr>
+            <p class="text-muted">
+                <strong>Creada por:</strong> {{ incidencia.creada_por.username }}<br>
+                <strong>Fecha de creación:</strong> {{ incidencia.fecha_creacion|date:"d/m/Y H:i" }}
             </p>
 
-            <a href="{% url 'listar_incidencias' %}" class="btn btn-outline-primary mt-3">Volver al listado</a>
+            {% if request.user.is_superuser %}
+                <a href="{% url 'listar_incidencias' %}" class="btn btn-outline-primary">Volver a gestionar</a>
+            {% else %}
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary">Volver al inicio</a>
+            {% endif %}
         </div>
     </div>
 </div>
