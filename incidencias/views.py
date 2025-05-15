@@ -18,12 +18,12 @@ from .serializers import IncidenciaSerializer
 # AUTENTICACIÓN API
 # ==========================
 
-@csrf_exempt  # evita error de CSRF por ahora
-@api_view(['POST', 'OPTIONS'])  # acepta preflight
+@csrf_exempt  
+@api_view(['POST', 'OPTIONS'])  
 @permission_classes([AllowAny])
 def api_login(request):
     if request.method == 'OPTIONS':
-        return Response(status=200)  # respuesta explícita para preflight
+        return Response(status=200) 
 
     username = request.data.get('username')
     password = request.data.get('password')
