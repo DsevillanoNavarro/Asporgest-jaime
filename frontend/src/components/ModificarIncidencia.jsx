@@ -1,47 +1,85 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-function ModificarIncidencia({ incidencia, onActualizada }) {
-  const [estado, setEstado] = useState(incidencia.estado);
-  const [observaciones, setObservaciones] = useState(incidencia.observaciones || '');
+function ModificarIncidencia({ incidenciaId, token, onActualizada }) {
+  const [incidencia, setIncidencia] = useState(null);
+  const [estado, setEstado] = useState('');
+  const [observaciones, setObservaciones] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (incidenciaId) {
+      fetch(`http://localhost:8000/api/incidencias/${incidenciaId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          setIncidencia(data);
+          setEstado(data.estado);
+          setObservaciones(data.observaciones || '');
+        })
+        .catch(() => setError('Error al cargar la incidencia'));
+    }
+  }, [incidenciaId, token]);
+
+  const handleGuardar = async (e) => {
     e.preventDefault();
+    setMensaje('');
+    setError('');
 
-    fetch(`http://localhost:8000/api/incidencias/${incidencia.id}/`, {
+    const response = await fetch(`http://localhost:8000/api/incidencias/${incidenciaId}/`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       },
-      credentials: 'include',
-      body: JSON.stringify({ estado, observaciones }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setMensaje('Incidencia actualizada.');
-        onActualizada(); // recargar incidencias
-        setTimeout(() => setMensaje(''), 2000);
-      })
-      .catch(err => console.error(err));
+      body: JSON.stringify({ estado, observaciones })
+    });
+
+    if (response.ok) {
+      setMensaje('Incidencia actualizada correctamente.');
+      if (onActualizada) onActualizada();
+    } else {
+      setError('Error al guardar los cambios');
+    }
   };
 
+  if (!incidencia) return <p className="text-muted">Cargando incidencia...</p>;
+
   return (
-    <form onSubmit={handleSubmit} className="mt-3 border-top pt-3">
-      <div className="mb-2">
-        <label>Estado:</label>
-        <select className="form-select" value={estado} onChange={(e) => setEstado(e.target.value)}>
-          <option value="nueva">Nueva</option>
-          <option value="en_curso">En curso</option>
-          <option value="cerrada">Cerrada</option>
-        </select>
+    <div className="card mt-4">
+      <div className="card-body">
+        <h5 className="card-title">Modificar Incidencia</h5>
+
+        {mensaje && <div className="alert alert-success">{mensaje}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
+
+        <form onSubmit={handleGuardar}>
+          <div className="mb-3">
+            <label className="form-label">Estado</label>
+            <select className="form-select" value={estado} onChange={(e) => setEstado(e.target.value)} required>
+              <option value="nueva">Nueva</option>
+              <option value="en_curso">En curso</option>
+              <option value="cerrada">Cerrada</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Observaciones</label>
+            <textarea
+              className="form-control"
+              rows="4"
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary">Guardar cambios</button>
+        </form>
       </div>
-      <div className="mb-2">
-        <label>Observaciones:</label>
-        <textarea className="form-control" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} />
-      </div>
-      <button className="btn btn-primary">Guardar cambios</button>
-      {mensaje && <span className="ms-3 text-success">{mensaje}</span>}
-    </form>
+    </div>
   );
 }
 

@@ -2,48 +2,40 @@ import React, { useState } from 'react';
 import Login from './components/Login';
 import CrearIncidencia from './components/CrearIncidencia';
 import ListadoIncidencias from './components/ListadoIncidencias';
-import Navbar from './components/Navbar';
 import Administracion from './components/Administracion';
-
+import Navbar from './components/Navbar';
 
 function App() {
-  const [autenticado, setAutenticado] = useState(false);
-  const [esAdmin, setEsAdmin] = useState(false);
+  const [usuario, setUsuario] = useState(null);
   const [vista, setVista] = useState('crear');
-  const [mensajeLogout, setMensajeLogout] = useState('');
 
   const handleLogout = () => {
-    setAutenticado(false);
-    setMensajeLogout('Sesión cerrada correctamente.');
-    setTimeout(() => setMensajeLogout(''), 3000);
+    document.cookie = 'access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    setUsuario(null);
   };
 
-  const handleLoginSuccess = () => {
-  fetch('http://localhost:8000/api/whoami/', {
-    credentials: 'include',
-  })
-    .then(res => res.json())
-    .then(data => {
-      setEsAdmin(data.is_superuser);
-      setAutenticado(true);
-    });
-};
+  const handleLoginSuccess = (userInfo) => {
+    setUsuario(userInfo);
+    setVista('crear');
+  };
 
   return (
     <div className="container mt-4">
-      {mensajeLogout && (
-        <div className="alert alert-info text-center">{mensajeLogout}</div>
-      )}
-
-      {autenticado ? (
+      {!usuario ? (
+        <Login onLoginSuccess={handleLoginSuccess} />
+      ) : (
         <>
-          <Navbar onLogout={handleLogout} esAdmin={esAdmin} setVista={setVista} />
+          <Navbar
+            usuario={usuario}
+            setVista={setVista}
+            onLogout={handleLogout}
+          />
+
           {vista === 'crear' && <CrearIncidencia />}
           {vista === 'mis' && <ListadoIncidencias />}
-          {vista === 'admin' && esAdmin && <Administracion />}
+          {vista === 'admin' && usuario.is_superuser && <Administracion />}
         </>
-      ) : (
-        <Login onLoginSuccess={handleLoginSuccess} />
       )}
     </div>
   );

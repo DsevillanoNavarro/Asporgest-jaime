@@ -1,90 +1,84 @@
-import React, { useEffect, useState } from 'react';
-
-// ✅ Función para leer cookies (CSRF)
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      const trimmed = cookie.trim();
-      if (trimmed.startsWith(name + '=')) {
-        cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
+import React, { useState } from 'react';
 
 function Login({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetch('http://localhost:8000/api/csrf/', {
-      method: 'GET',
-      credentials: 'include',
-    });
-  }, []);
+  const guardarCookie = (clave, valor) => {
+    document.cookie = `${clave}=${valor}; path=/;`;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const csrftoken = getCookie('csrftoken');
+    setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/login/', {
+      const response = await fetch('http://localhost:8000/api/token/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json'
         },
-        credentials: 'include',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username,
+          password
+        }),
       });
 
-      if (response.ok) {
-        setError('');
-        onLoginSuccess();
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Credenciales incorrectas');
+      if (!response.ok) {
+        throw new Error('Credenciales inválidas');
       }
+
+      const data = await response.json();
+      guardarCookie('access', data.access);
+      guardarCookie('refresh', data.refresh);
+
+      // Ahora obtenemos el usuario logueado
+      const whoamiRes = await fetch('http://localhost:8000/api/whoami/', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${data.access}`,
+        },
+      });
+
+      if (!whoamiRes.ok) {
+        throw new Error('No se pudo obtener el usuario');
+      }
+
+      const userInfo = await whoamiRes.json();
+      onLoginSuccess(userInfo);
+
     } catch (err) {
-      setError('Error al conectar con el servidor');
+      setError(err.message || 'Error de conexión');
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: '500px' }}>
-      <h2 className="mb-4 text-primary">Iniciar sesión</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
+    <div className="container mt-5">
+      <h2>Iniciar sesión</h2>
+      {error && <p className="text-danger">{error}</p>}
       <form onSubmit={handleLogin}>
         <div className="mb-3">
-          <label className="form-label">Usuario</label>
+          <label>Usuario o correo electrónico</label>
           <input
             type="text"
             value={username}
-            onChange={e => setUsername(e.target.value)}
-            placeholder="Nombre de usuario"
             className="form-control"
-            autoComplete="username"
+            onChange={e => setUsername(e.target.value)}
             required
           />
         </div>
         <div className="mb-3">
-          <label className="form-label">Contraseña</label>
+          <label>Contraseña</label>
           <input
             type="password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Contraseña"
             className="form-control"
-            autoComplete="current-password"
+            onChange={e => setPassword(e.target.value)}
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary w-100">Entrar</button>
+        <button type="submit" className="btn btn-primary">Entrar</button>
       </form>
     </div>
   );

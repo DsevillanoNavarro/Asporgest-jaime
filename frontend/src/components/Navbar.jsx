@@ -2,16 +2,40 @@ import React from 'react';
 
 function Navbar({ onLogout, esAdmin, setVista }) {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4">
-      <span className="navbar-brand fw-bold">ASPROGEST</span>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+      <div className="container-fluid">
+        <span className="navbar-brand" style={{ cursor: 'pointer' }} onClick={() => setVista('crear')}>
+          ASPROGEST
+        </span>
 
-      <div className="ms-auto d-flex align-items-center gap-3">
-        <button onClick={() => setVista('crear')} className="btn btn-outline-light btn-sm">Crear incidencia</button>
-        <button onClick={() => setVista('mis')} className="btn btn-outline-light btn-sm">Mis incidencias</button>
-        {esAdmin && (
-          <button onClick={() => setVista('admin')} className="btn btn-outline-light btn-sm">Administración</button>
-        )}
-        <button onClick={onLogout} className="btn btn-light btn-sm">Cerrar sesión</button>
+        <div className="collapse navbar-collapse">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+
+            <li className="nav-item">
+              <button className="btn btn-link nav-link" onClick={() => setVista('crear')}>
+                Crear incidencia
+              </button>
+            </li>
+
+            <li className="nav-item">
+              <button className="btn btn-link nav-link" onClick={() => setVista('mis')}>
+                Mis incidencias
+              </button>
+            </li>
+
+            {esAdmin && (
+              <li className="nav-item">
+                <button className="btn btn-link nav-link" onClick={() => setVista('admin')}>
+                  Administración
+                </button>
+              </li>
+            )}
+          </ul>
+
+          <button className="btn btn-outline-light" onClick={onLogout}>
+            Cerrar sesión
+          </button>
+        </div>
       </div>
     </nav>
   );
