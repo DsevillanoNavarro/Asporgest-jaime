@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function CrearIncidencia({ token }) {
+function CrearIncidencia() {
   const [form, setForm] = useState({
     centro: '',
     fecha: '',
@@ -14,18 +14,24 @@ function CrearIncidencia({ token }) {
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
+  const getToken = () => {
+    const match = document.cookie.match(/(^| )access=([^;]+)/);
+    return match ? match[2] : '';
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
+    setForm(prev => ({
+      ...prev,
       [name]: type === 'checkbox' ? checked : value
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
     setError('');
+    const token = getToken();
 
     try {
       const res = await fetch('http://localhost:8000/api/incidencias/', {
@@ -50,6 +56,7 @@ function CrearIncidencia({ token }) {
         });
       } else {
         const data = await res.json();
+        console.log(data);
         setError(data.detail || 'Error al crear la incidencia');
       }
     } catch (err) {
@@ -60,11 +67,10 @@ function CrearIncidencia({ token }) {
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Crear Incidencia</h2>
-
       {mensaje && <div className="alert alert-success">{mensaje}</div>}
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
+<form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Centro *</label>
           <select
@@ -80,13 +86,13 @@ function CrearIncidencia({ token }) {
             <option>CPM II</option>
             <option>RGA III</option>
             <option>CPM IV</option>
-            <option>DISL V</option>
+            <option>OISL V</option>
             <option>CPM VII</option>
             <option>CPM X</option>
             <option>ISL XI</option>
             <option>ISL XII</option>
             <option>ISL XIII</option>
-            <option>CAL XIV</option>
+            <option>CAI XIV</option>
             <option>CPM XV</option>
           </select>
         </div>

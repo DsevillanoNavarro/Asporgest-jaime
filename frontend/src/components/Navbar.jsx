@@ -1,29 +1,27 @@
 import React from 'react';
 
-function Navbar({ onLogout, esAdmin, setVista }) {
+function Navbar({ usuario, setVista, onLogout }) {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4 rounded shadow">
       <div className="container-fluid">
-        <span className="navbar-brand" style={{ cursor: 'pointer' }} onClick={() => setVista('crear')}>
-          ASPROGEST
-        </span>
+        <span className="navbar-brand fw-bold">ASPROGEST</span>
 
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
 
             <li className="nav-item">
               <button className="btn btn-link nav-link" onClick={() => setVista('crear')}>
-                Crear incidencia
+                Crear Incidencia
               </button>
             </li>
 
             <li className="nav-item">
               <button className="btn btn-link nav-link" onClick={() => setVista('mis')}>
-                Mis incidencias
+                Mis Incidencias
               </button>
             </li>
 
-            {esAdmin && (
+            {usuario?.is_superuser && (
               <li className="nav-item">
                 <button className="btn btn-link nav-link" onClick={() => setVista('admin')}>
                   Administración
@@ -32,6 +30,7 @@ function Navbar({ onLogout, esAdmin, setVista }) {
             )}
           </ul>
 
+          <span className="navbar-text me-3">Bienvenido, <strong>{usuario.username}</strong></span>
           <button className="btn btn-outline-light" onClick={onLogout}>
             Cerrar sesión
           </button>

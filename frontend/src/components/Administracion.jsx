@@ -1,24 +1,49 @@
 import React, { useEffect, useState } from 'react';
+import GestionarIncidencia from './GestionarIncidencia';
 
 function Administracion({ token }) {
   const [usuarios, setUsuarios] = useState([]);
   const [nuevo, setNuevo] = useState({ username: '', email: '', password: '' });
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
+  const [incidencias, setIncidencias] = useState([]);
+  const [nuevas, setNuevas] = useState(0);
 
   const cargarUsuarios = () => {
     fetch('http://localhost:8000/api/usuarios/', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
       .then(data => setUsuarios(data))
-      .catch(err => setError('Error al cargar usuarios'));
+      .catch(() => setError('Error al cargar usuarios'));
   };
+
+  const cargarIncidencias = async () => {
+  try {
+    const res = await fetch('http://localhost:8000/api/incidencias/', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      console.error("Respuesta inesperada:", data);
+      setError("Token inválido o no autorizado");
+      return;
+    }
+
+    setIncidencias(data);
+  } catch (err) {
+    console.error(err);
+    setError("Error de conexión");
+  }
+};
 
   useEffect(() => {
     cargarUsuarios();
+    cargarIncidencias();
   }, []);
 
   const handleInputChange = (e) => {
@@ -53,11 +78,23 @@ function Administracion({ token }) {
     }
   };
 
+  const separarPorEstado = (estado) =>
+    incidencias
+      .filter(i => i.estado === estado)
+      .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
+
   return (
     <div className="container mt-4">
-      <h2>Administración</h2>
+      <h2>Panel de Administración</h2>
 
-      <div className="card mt-4">
+      {/* Info incidencias */}
+      <div className="alert alert-info mt-4">
+        Tienes <strong>{nuevas}</strong> incidencias nuevas.{' '}
+        {nuevas > 0 ? 'Revísalas en el apartado de abajo.' : 'No hay nuevas incidencias por revisar.'}
+      </div>
+
+      {/* Crear usuario */}
+      <div className="card mt-3">
         <div className="card-body">
           <h5 className="card-title">Crear nuevo usuario</h5>
 
@@ -105,6 +142,7 @@ function Administracion({ token }) {
         </div>
       </div>
 
+      {/* Usuarios registrados */}
       <div className="mt-5">
         <h4>Usuarios registrados</h4>
         <table className="table table-bordered table-striped mt-3">
@@ -129,6 +167,27 @@ function Administracion({ token }) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Gestión de incidencias */}
+      <div className="mt-5">
+        <h4>Gestión de Incidencias</h4>
+
+        {['nueva', 'en_curso', 'cerrada'].map((estado, idx) => (
+          <div className="mt-4" key={idx}>
+            <h5 className="text-primary">
+              {estado === 'nueva' ? 'Nuevas' : estado === 'en_curso' ? 'En curso' : 'Cerradas'}
+            </h5>
+            {separarPorEstado(estado).map((inc) => (
+              <GestionarIncidencia
+                key={inc.id}
+                incidencia={inc}
+                token={token}
+                onActualizada={cargarIncidencias}
+              />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );

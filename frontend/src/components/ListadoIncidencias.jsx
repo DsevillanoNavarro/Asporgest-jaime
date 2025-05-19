@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-function ListadoIncidencias({ token, usuario }) {
+function ListadoIncidencias({ usuario }) {
   const [incidencias, setIncidencias] = useState([]);
   const [error, setError] = useState('');
 
+  const getToken = () => {
+    const match = document.cookie.match(/(^| )access=([^;]+)/);
+    return match ? match[2] : '';
+  };
+
   useEffect(() => {
+    const token = getToken();
+
     fetch('http://localhost:8000/api/incidencias/', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -16,15 +23,37 @@ function ListadoIncidencias({ token, usuario }) {
       })
       .then(data => setIncidencias(data))
       .catch(() => setError('No se pudieron cargar las incidencias.'));
-  }, [token]);
+  }, []);
 
-  const separarPorEstado = (estado) =>
-    incidencias
-      .filter((inc) => inc.estado === estado)
-      .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
+  const relativaTexto = (codigo) => {
+    const opciones = {
+      '1': 'Línea y/o dispositivo telefónico corporativo',
+      '2': 'Ordenador',
+      '3': 'Internet',
+      '4': 'Cuenta Corporativa GSuite',
+      '5': 'Impresora',
+      '6': 'Plataforma gestion.grupoanide.es',
+      '7': 'Dispositivos personales autorizados',
+      '8': 'Control de accesos',
+      '9': 'Otro',
+    };
+    return opciones[codigo] || codigo;
+  };
+
+  const estadoTexto = (valor) => {
+    switch (valor) {
+      case 'nueva': return 'Nueva';
+      case 'en_curso': return 'En curso';
+      case 'cerrada': return 'Cerrada';
+      default: return valor;
+    }
+  };
 
   const renderGrupo = (titulo, estadoClave) => {
-    const grupo = separarPorEstado(estadoClave);
+    const grupo = incidencias
+      .filter((i) => i.estado === estadoClave)
+      .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
+
     return (
       <div className="mt-4">
         <h3 className="text-primary">{titulo}</h3>
@@ -58,34 +87,6 @@ function ListadoIncidencias({ token, usuario }) {
     );
   };
 
-  const relativaTexto = (codigo) => {
-    const opciones = {
-      '1': 'Línea y/o dispositivo telefónico corporativo',
-      '2': 'Ordenador',
-      '3': 'Internet',
-      '4': 'Cuenta Corporativa GSuite',
-      '5': 'Impresora',
-      '6': 'Plataforma gestion.grupoanide.es',
-      '7': 'Dispositivos personales autorizados',
-      '8': 'Control de accesos',
-      '9': 'Otro',
-    };
-    return opciones[codigo] || codigo;
-  };
-
-  const estadoTexto = (valor) => {
-    switch (valor) {
-      case 'nueva':
-        return 'Nueva';
-      case 'en_curso':
-        return 'En curso';
-      case 'cerrada':
-        return 'Cerrada';
-      default:
-        return valor;
-    }
-  };
-
   return (
     <div className="container">
       <h2>Listado de Incidencias</h2>
@@ -98,36 +99,7 @@ function ListadoIncidencias({ token, usuario }) {
           {renderGrupo('Cerradas', 'cerrada')}
         </>
       ) : (
-        <div className="mt-3">
-          {incidencias.length === 0 ? (
-            <p className="text-muted">No tienes incidencias registradas.</p>
-          ) : (
-            incidencias
-              .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
-              .map((inc) => (
-                <div className="card my-3" key={inc.id}>
-                  <div className="card-body">
-                    <h5 className="card-title">{inc.descripcion}</h5>
-                    <p className="card-text">
-                      <strong>Centro:</strong> {inc.centro}<br />
-                      <strong>Fecha:</strong> {new Date(inc.fecha_creacion).toLocaleString()}<br />
-                      <strong>Teléfono:</strong> {inc.telefono_contacto}<br />
-                      <strong>Urgencia:</strong> {inc.urgencia ? 'Sí' : 'No'}<br />
-                      <strong>Prioridad:</strong> {inc.prioridad}<br />
-                      <strong>Relativa a:</strong> {relativaTexto(inc.relativa)}<br />
-                      <strong>Estado:</strong> {estadoTexto(inc.estado)}<br />
-                      {inc.observaciones && (
-                        <>
-                          <strong>Observaciones:</strong><br />
-                          <em>{inc.observaciones}</em>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              ))
-          )}
-        </div>
+        renderGrupo('Tus incidencias', 'nueva')  // o todas si prefieres
       )}
     </div>
   );

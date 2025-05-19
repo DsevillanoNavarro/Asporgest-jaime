@@ -10,6 +10,7 @@ function App() {
   const [vista, setVista] = useState('crear');
 
   const handleLogout = () => {
+    // Borrar cookies JWT
     document.cookie = 'access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     setUsuario(null);
@@ -17,7 +18,7 @@ function App() {
 
   const handleLoginSuccess = (userInfo) => {
     setUsuario(userInfo);
-    setVista('crear');
+    setVista('crear'); // Redirigir a crear por defecto
   };
 
   return (
@@ -33,7 +34,7 @@ function App() {
           />
 
           {vista === 'crear' && <CrearIncidencia />}
-          {vista === 'mis' && <ListadoIncidencias />}
+          {vista === 'mis' && <ListadoIncidencias usuario={usuario} />}
           {vista === 'admin' && usuario.is_superuser && <Administracion />}
         </>
       )}

@@ -32,3 +32,11 @@ class IncidenciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Incidencia
         fields = '__all__'
+        read_only_fields = ['creada_por', 'fecha_creacion']
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        if not user.is_superuser:
+            validated_data.pop('estado', None)
+            validated_data.pop('observaciones', None)
+        return super().update(instance, validated_data)
