@@ -38,9 +38,5 @@ uploads/
 .env
 .env.*
 
-# Static files
-staticfiles/
-static/
-
 # Compilados y cachés de Django
 *.~undo-tree~
