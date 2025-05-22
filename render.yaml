@@ -12,4 +12,6 @@ services:
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
+      - key: RENDER
+        value: true
     autoDeploy: true
