@@ -11,7 +11,7 @@ del templates\index.html
 
 echo 📂 Copiando archivos de React a Django...
 xcopy frontend\build\static static /s /e /y
-copy frontend\build\index.html templates\index.html
+copy frontend\build\index.html incidencias\templates\index.html
 
 echo ✅ React copiado a Django correctamente.
 pause
