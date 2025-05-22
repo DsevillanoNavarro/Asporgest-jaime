@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import GestionarIncidencia from './GestionarIncidencia';
+import { refreshTokenIfNeeded } from '../utils/auth';
 
-function Administracion({ token }) {
+function Administracion() {
   const [usuarios, setUsuarios] = useState([]);
   const [nuevo, setNuevo] = useState({ username: '', email: '', password: '' });
   const [mensaje, setMensaje] = useState('');
@@ -9,37 +10,43 @@ function Administracion({ token }) {
   const [incidencias, setIncidencias] = useState([]);
   const [nuevas, setNuevas] = useState(0);
 
-  const cargarUsuarios = () => {
-    fetch('http://localhost:8000/api/usuarios/', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setUsuarios(data))
-      .catch(() => setError('Error al cargar usuarios'));
+  const cargarUsuarios = async () => {
+    try {
+      const token = await refreshTokenIfNeeded();
+      const res = await fetch('http://localhost:8000/api/usuarios/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setUsuarios(data);
+    } catch {
+      setError('Error al cargar usuarios');
+    }
   };
 
   const cargarIncidencias = async () => {
-  try {
-    const res = await fetch('http://localhost:8000/api/incidencias/', {
-      headers: {
-        Authorization: `Bearer ${token}`
+    try {
+      const token = await refreshTokenIfNeeded();
+      const res = await fetch('http://localhost:8000/api/incidencias/', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        console.error("Respuesta inesperada:", data);
+        setError("Token inválido o no autorizado");
+        return;
       }
-    });
 
-    const data = await res.json();
-
-    if (!Array.isArray(data)) {
-      console.error("Respuesta inesperada:", data);
-      setError("Token inválido o no autorizado");
-      return;
+      setIncidencias(data);
+      const nuevasIncidencias = data.filter((i) => i.estado === 'nueva').length;
+      setNuevas(nuevasIncidencias);
+    } catch (err) {
+      console.error(err);
+      setError("Error de conexión");
     }
-
-    setIncidencias(data);
-  } catch (err) {
-    console.error(err);
-    setError("Error de conexión");
-  }
-};
+  };
 
   useEffect(() => {
     cargarUsuarios();
@@ -56,6 +63,7 @@ function Administracion({ token }) {
     setError('');
 
     try {
+      const token = await refreshTokenIfNeeded();
       const res = await fetch('http://localhost:8000/api/crear_usuario/', {
         method: 'POST',
         headers: {
@@ -182,7 +190,6 @@ function Administracion({ token }) {
               <GestionarIncidencia
                 key={inc.id}
                 incidencia={inc}
-                token={token}
                 onActualizada={cargarIncidencias}
               />
             ))}

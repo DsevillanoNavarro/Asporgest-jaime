@@ -1,24 +1,44 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { refreshTokenIfNeeded, getAccessToken } from './utils/auth';
 import Login from './components/Login';
+import Navbar from './components/Navbar';
 import CrearIncidencia from './components/CrearIncidencia';
 import ListadoIncidencias from './components/ListadoIncidencias';
 import Administracion from './components/Administracion';
-import Navbar from './components/Navbar';
 
 function App() {
   const [usuario, setUsuario] = useState(null);
   const [vista, setVista] = useState('crear');
 
+  const cargarUsuario = async () => {
+    try {
+      const token = await refreshTokenIfNeeded();
+      const res = await fetch('http://localhost:8000/api/whoami/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setUsuario(data);
+      }
+    } catch (err) {
+      console.warn('No se pudo cargar sesión automáticamente');
+    }
+  };
+
+  useEffect(() => {
+    cargarUsuario();
+  }, []);
+
   const handleLogout = () => {
-    // Borrar cookies JWT
-    document.cookie = 'access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'access=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     setUsuario(null);
   };
 
   const handleLoginSuccess = (userInfo) => {
     setUsuario(userInfo);
-    setVista('crear'); // Redirigir a crear por defecto
+    setVista('crear');
   };
 
   return (
@@ -27,12 +47,7 @@ function App() {
         <Login onLoginSuccess={handleLoginSuccess} />
       ) : (
         <>
-          <Navbar
-            usuario={usuario}
-            setVista={setVista}
-            onLogout={handleLogout}
-          />
-
+          <Navbar usuario={usuario} setVista={setVista} onLogout={handleLogout} />
           {vista === 'crear' && <CrearIncidencia />}
           {vista === 'mis' && <ListadoIncidencias usuario={usuario} />}
           {vista === 'admin' && usuario.is_superuser && <Administracion />}

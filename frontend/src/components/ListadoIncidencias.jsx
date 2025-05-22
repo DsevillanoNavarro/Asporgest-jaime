@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { refreshTokenIfNeeded } from '../utils/auth';
 
 function ListadoIncidencias({ usuario }) {
   const [incidencias, setIncidencias] = useState([]);
   const [error, setError] = useState('');
 
-  const getToken = () => {
-    const match = document.cookie.match(/(^| )access=([^;]+)/);
-    return match ? match[2] : '';
-  };
-
   useEffect(() => {
-    const token = getToken();
+    const cargarIncidencias = async () => {
+      try {
+        const token = await refreshTokenIfNeeded();  // ✅ usa refresh
+        const res = await fetch('http://localhost:8000/api/incidencias/', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
-    fetch('http://localhost:8000/api/incidencias/', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => {
         if (!res.ok) throw new Error('Error de autenticación');
-        return res.json();
-      })
-      .then(data => setIncidencias(data))
-      .catch(() => setError('No se pudieron cargar las incidencias.'));
+        const data = await res.json();
+        setIncidencias(data);
+      } catch (err) {
+        setError('No se pudieron cargar las incidencias.');
+      }
+    };
+
+    cargarIncidencias();
   }, []);
 
   const relativaTexto = (codigo) => {
@@ -99,7 +100,9 @@ function ListadoIncidencias({ usuario }) {
           {renderGrupo('Cerradas', 'cerrada')}
         </>
       ) : (
-        renderGrupo('Tus incidencias', 'nueva')  // o todas si prefieres
+        incidencias.length > 0
+          ? renderGrupo('Tus incidencias', 'nueva')  // o mostrar todas
+          : <p className="text-muted mt-3">No tienes incidencias registradas.</p>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { refreshTokenIfNeeded } from '../utils/auth';
 
 function CrearIncidencia() {
   const [form, setForm] = useState({
@@ -14,11 +15,6 @@ function CrearIncidencia() {
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
-  const getToken = () => {
-    const match = document.cookie.match(/(^| )access=([^;]+)/);
-    return match ? match[2] : '';
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm(prev => ({
@@ -31,7 +27,8 @@ function CrearIncidencia() {
     e.preventDefault();
     setMensaje('');
     setError('');
-    const token = getToken();
+
+    const token = await refreshTokenIfNeeded(); // ✅ Usa refresh aquí
 
     try {
       const res = await fetch('http://localhost:8000/api/incidencias/', {
@@ -56,7 +53,6 @@ function CrearIncidencia() {
         });
       } else {
         const data = await res.json();
-        console.log(data);
         setError(data.detail || 'Error al crear la incidencia');
       }
     } catch (err) {
@@ -67,19 +63,15 @@ function CrearIncidencia() {
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Crear Incidencia</h2>
+
       {mensaje && <div className="alert alert-success">{mensaje}</div>}
       {error && <div className="alert alert-danger">{error}</div>}
 
-<form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        {/* centro */}
         <div className="mb-3">
           <label className="form-label">Centro *</label>
-          <select
-            className="form-select"
-            name="centro"
-            value={form.centro}
-            onChange={handleChange}
-            required
-          >
+          <select className="form-select" name="centro" value={form.centro} onChange={handleChange} required>
             <option value="">Seleccione...</option>
             <option>CENTRAL</option>
             <option>CPM I</option>
@@ -97,56 +89,35 @@ function CrearIncidencia() {
           </select>
         </div>
 
+        {/* fecha */}
         <div className="mb-3">
           <label className="form-label">Fecha *</label>
-          <input
-            type="date"
-            className="form-control"
-            name="fecha"
-            value={form.fecha}
-            onChange={handleChange}
-            required
-          />
+          <input type="date" className="form-control" name="fecha" value={form.fecha} onChange={handleChange} required />
         </div>
 
+        {/* urgencia */}
         <div className="mb-3">
           <label className="form-label">¿Urgente?</label>
           <div className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              name="urgencia"
-              checked={form.urgencia}
-              onChange={handleChange}
-            />
+            <input type="checkbox" className="form-check-input" name="urgencia" checked={form.urgencia} onChange={handleChange} />
             <label className="form-check-label">Sí</label>
           </div>
         </div>
 
+        {/* prioridad */}
         <div className="mb-3">
           <label className="form-label">Prioridad *</label>
-          <select
-            className="form-select"
-            name="prioridad"
-            value={form.prioridad}
-            onChange={handleChange}
-            required
-          >
+          <select className="form-select" name="prioridad" value={form.prioridad} onChange={handleChange} required>
             <option value="Baja">Baja</option>
             <option value="Media">Media</option>
             <option value="Alta">Alta</option>
           </select>
         </div>
 
+        {/* relativa */}
         <div className="mb-3">
           <label className="form-label">Relativa a *</label>
-          <select
-            className="form-select"
-            name="relativa"
-            value={form.relativa}
-            onChange={handleChange}
-            required
-          >
+          <select className="form-select" name="relativa" value={form.relativa} onChange={handleChange} required>
             <option value="">Seleccione...</option>
             <option value="1">Línea y/o dispositivo telefónico corporativo</option>
             <option value="2">Ordenador</option>
@@ -160,34 +131,20 @@ function CrearIncidencia() {
           </select>
         </div>
 
+        {/* descripción */}
         <div className="mb-3">
           <label className="form-label">Descripción *</label>
-          <textarea
-            className="form-control"
-            name="descripcion"
-            value={form.descripcion}
-            onChange={handleChange}
-            rows="4"
-            required
-          ></textarea>
+          <textarea className="form-control" name="descripcion" value={form.descripcion} onChange={handleChange} rows="4" required />
         </div>
 
+        {/* teléfono */}
         <div className="mb-3">
           <label className="form-label">Teléfono de contacto *</label>
-          <input
-            type="text"
-            className="form-control"
-            name="telefono_contacto"
-            value={form.telefono_contacto}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" className="form-control" name="telefono_contacto" value={form.telefono_contacto} onChange={handleChange} required />
         </div>
 
         <div className="text-center">
-          <button type="submit" className="btn btn-success px-5">
-            Enviar
-          </button>
+          <button type="submit" className="btn btn-success px-5">Enviar</button>
         </div>
       </form>
     </div>
