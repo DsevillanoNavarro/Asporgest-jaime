@@ -6,9 +6,9 @@ npm run build || exit
 
 echo "📂 Copiando archivos a Django..."
 rm -rf ../static/*
-rm -f ../templates/index.html
+# NO BORRAR NI MOVER templates/index.html
 
 cp -r build/static/* ../static/
-cp build/index.html ../templates/
+# NO copiar index.html
 
 echo "✅ React copiado a Django correctamente."
