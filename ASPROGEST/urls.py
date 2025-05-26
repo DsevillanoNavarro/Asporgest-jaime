@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('incidencias.urls')),  # Incluye todas las rutas de tu app
+    path('api/', include('incidencias.urls')),  # Incluye todas las rutas de tu app
 ]
 urlpatterns += [
     path('', TemplateView.as_view(template_name='index.html')),
