@@ -1,4 +1,6 @@
 // src/utils/auth.js
+import API_BASE from './config';
+
 export async function refreshTokenIfNeeded() {
   const access = getCookie('access');
   if (access) return access;
@@ -7,7 +9,7 @@ export async function refreshTokenIfNeeded() {
   if (!refresh) return null;
 
   try {
-    const response = await fetch('http://localhost:8000/api/token/refresh/', {
+    const response = await fetch(`${API_BASE}/token/refresh/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh })

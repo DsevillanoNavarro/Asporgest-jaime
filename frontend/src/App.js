@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import CrearIncidencia from './components/CrearIncidencia';
 import ListadoIncidencias from './components/ListadoIncidencias';
 import Administracion from './components/Administracion';
-import API_BASE from '../utils/config';
+import API_BASE from './utils/config';
 
 
 function App() {
