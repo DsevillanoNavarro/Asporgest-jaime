@@ -3,6 +3,7 @@ import os
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = BASE_DIR.parent
 
 SECRET_KEY = 'django-insecure-@(tooz4f@fb@tt#e*du^uilx%pb%7#%cjzsx9dz95i2&u4w%e_'
 DEBUG = True
@@ -96,8 +97,15 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'frontend' / 'build' / 'static',
+]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+TEMPLATES[0]['DIRS'] = [BASE_DIR / 'frontend' / 'build']
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
