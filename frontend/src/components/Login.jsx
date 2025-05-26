@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE from '../utils/config';
 
 function Login({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
@@ -6,7 +7,7 @@ function Login({ onLoginSuccess }) {
   const [error, setError] = useState('');
 
   const guardarCookie = (clave, valor) => {
-    document.cookie = `${clave}=${valor}; path=/;`;
+    document.cookie = `${clave}=${valor}; path=/; SameSite=Lax;`;
   };
 
   const handleLogin = async (e) => {
@@ -14,15 +15,12 @@ function Login({ onLoginSuccess }) {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/token/', {
+      const response = await fetch(`${API_BASE}/token/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          username,
-          password
-        }),
+        body: JSON.stringify({ username, password })
       });
 
       if (!response.ok) {
@@ -33,12 +31,11 @@ function Login({ onLoginSuccess }) {
       guardarCookie('access', data.access);
       guardarCookie('refresh', data.refresh);
 
-      // Ahora obtenemos el usuario logueado
-      const whoamiRes = await fetch('http://localhost:8000/api/whoami/', {
-        method: 'GET',
+      // Obtener el usuario actual
+      const whoamiRes = await fetch(`${API_BASE}/whoami/`, {
         headers: {
-          'Authorization': `Bearer ${data.access}`,
-        },
+          Authorization: `Bearer ${data.access}`
+        }
       });
 
       if (!whoamiRes.ok) {
@@ -47,7 +44,6 @@ function Login({ onLoginSuccess }) {
 
       const userInfo = await whoamiRes.json();
       onLoginSuccess(userInfo);
-
     } catch (err) {
       setError(err.message || 'Error de conexión');
     }
@@ -62,8 +58,8 @@ function Login({ onLoginSuccess }) {
           <label>Usuario o correo electrónico</label>
           <input
             type="text"
-            value={username}
             className="form-control"
+            value={username}
             onChange={e => setUsername(e.target.value)}
             required
           />
@@ -72,8 +68,8 @@ function Login({ onLoginSuccess }) {
           <label>Contraseña</label>
           <input
             type="password"
-            value={password}
             className="form-control"
+            value={password}
             onChange={e => setPassword(e.target.value)}
             required
           />

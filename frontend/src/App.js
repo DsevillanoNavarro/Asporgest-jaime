@@ -6,6 +6,8 @@ import CrearIncidencia from './components/CrearIncidencia';
 import ListadoIncidencias from './components/ListadoIncidencias';
 import Administracion from './components/Administracion';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function App() {
   const [usuario, setUsuario] = useState(null);
   const [vista, setVista] = useState('crear');
@@ -13,7 +15,7 @@ function App() {
   const cargarUsuario = async () => {
     try {
       const token = await refreshTokenIfNeeded();
-      const res = await fetch('http://localhost:8000/api/whoami/', {
+      const res = await fetch(`${API_BASE}/api/whoami/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -31,8 +33,8 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    document.cookie = 'access=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-    document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     setUsuario(null);
   };
 

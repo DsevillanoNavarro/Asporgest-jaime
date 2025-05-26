@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
 function ListadoUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/usuarios/', {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(data => setUsuarios(data))
-      .catch(err => setError('Error al cargar usuarios'));
+    const cargarUsuarios = async () => {
+      try {
+        const token = await refreshTokenIfNeeded();
+        const res = await fetch(`${API_BASE}/usuarios/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+        setUsuarios(data);
+      } catch (err) {
+        setError('Error al cargar usuarios');
+      }
+    };
+
+    cargarUsuarios();
   }, []);
 
   return (

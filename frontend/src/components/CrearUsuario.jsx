@@ -1,31 +1,44 @@
 import React, { useState } from 'react';
+import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
 function CrearUsuario() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMensaje('');
 
-    fetch('http://localhost:8000/api/crear_usuario/', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setMensaje('✅ Usuario creado correctamente');
-          setUsername('');
-          setPassword('');
-        } else {
-          setMensaje('❌ ' + (data.error || 'Error al crear usuario'));
-        }
+    try {
+      const token = await refreshTokenIfNeeded();
 
-        setTimeout(() => setMensaje(''), 4000);
+      const res = await fetch(`${API_BASE}/crear_usuario/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ username, email, password }),
       });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMensaje('✅ Usuario creado correctamente');
+        setUsername('');
+        setEmail('');
+        setPassword('');
+      } else {
+        setMensaje('❌ ' + (data.error || 'Error al crear usuario'));
+      }
+    } catch {
+      setMensaje('❌ Error de conexión con el servidor');
+    }
+
+    setTimeout(() => setMensaje(''), 4000);
   };
 
   return (
@@ -35,11 +48,32 @@ function CrearUsuario() {
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
           <label>Nombre de usuario:</label>
-          <input className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <input
+            className="form-control"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-2">
+          <label>Correo electrónico:</label>
+          <input
+            className="form-control"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div className="mb-2">
           <label>Contraseña:</label>
-          <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            className="form-control"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         <button type="submit" className="btn btn-primary">Crear</button>
       </form>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
 function CrearIncidencia() {
   const [form, setForm] = useState({
@@ -28,10 +29,10 @@ function CrearIncidencia() {
     setMensaje('');
     setError('');
 
-    const token = await refreshTokenIfNeeded(); // ✅ Usa refresh aquí
+    const token = await refreshTokenIfNeeded();
 
     try {
-      const res = await fetch('http://localhost:8000/api/incidencias/', {
+      const res = await fetch(`${API_BASE}/incidencias/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

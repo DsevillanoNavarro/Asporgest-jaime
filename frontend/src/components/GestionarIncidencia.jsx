@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
 function GestionarIncidencia({ incidencia, onActualizada }) {
   const [estado, setEstado] = useState(incidencia.estado);
@@ -13,7 +14,7 @@ function GestionarIncidencia({ incidencia, onActualizada }) {
 
     try {
       const token = await refreshTokenIfNeeded();
-      const res = await fetch(`http://localhost:8000/api/incidencias/${incidencia.id}/`, {
+      const res = await fetch(`${API_BASE}/incidencias/${incidencia.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

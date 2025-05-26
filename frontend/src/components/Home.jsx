@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react';
+import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
 function Home({ usuario, setVista }) {
   const [nuevas, setNuevas] = useState(null);
 
-    useEffect(() => {
-    if (usuario.is_superuser) {
-        const token = localStorage.getItem('access');
-        fetch('http://localhost:8000/api/incidencias/nuevas/', {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-        })
-        .then(res => res.json())
-        .then(data => setNuevas(data.nuevas))
-        .catch(() => setNuevas(0));
-    }
-    }, [usuario]);
+  useEffect(() => {
+    const fetchNuevas = async () => {
+      if (!usuario.is_superuser) return;
 
+      try {
+        const token = await refreshTokenIfNeeded();
+        const res = await fetch(`${API_BASE}/incidencias/nuevas/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        setNuevas(data.nuevas);
+      } catch {
+        setNuevas(0);
+      }
+    };
+
+    fetchNuevas();
+  }, [usuario]);
 
   return (
     <div className="text-center mt-5">

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
-function ModificarIncidencia({ incidenciaId, token, onActualizada }) {
+function ModificarIncidencia({ incidenciaId, onActualizada }) {
   const [incidencia, setIncidencia] = useState(null);
   const [estado, setEstado] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -8,41 +10,52 @@ function ModificarIncidencia({ incidenciaId, token, onActualizada }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const cargarIncidencia = async () => {
+      try {
+        const token = await refreshTokenIfNeeded();
+        const res = await fetch(`${API_BASE}/incidencias/${incidenciaId}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        setIncidencia(data);
+        setEstado(data.estado);
+        setObservaciones(data.observaciones || '');
+      } catch {
+        setError('Error al cargar la incidencia');
+      }
+    };
+
     if (incidenciaId) {
-      fetch(`http://localhost:8000/api/incidencias/${incidenciaId}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          setIncidencia(data);
-          setEstado(data.estado);
-          setObservaciones(data.observaciones || '');
-        })
-        .catch(() => setError('Error al cargar la incidencia'));
+      cargarIncidencia();
     }
-  }, [incidenciaId, token]);
+  }, [incidenciaId]);
 
   const handleGuardar = async (e) => {
     e.preventDefault();
     setMensaje('');
     setError('');
 
-    const response = await fetch(`http://localhost:8000/api/incidencias/${incidenciaId}/`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ estado, observaciones })
-    });
+    try {
+      const token = await refreshTokenIfNeeded();
+      const response = await fetch(`${API_BASE}/incidencias/${incidenciaId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ estado, observaciones })
+      });
 
-    if (response.ok) {
-      setMensaje('Incidencia actualizada correctamente.');
-      if (onActualizada) onActualizada();
-    } else {
-      setError('Error al guardar los cambios');
+      if (response.ok) {
+        setMensaje('Incidencia actualizada correctamente.');
+        if (onActualizada) onActualizada();
+      } else {
+        setError('Error al guardar los cambios');
+      }
+    } catch {
+      setError('Error de conexión');
     }
   };
 

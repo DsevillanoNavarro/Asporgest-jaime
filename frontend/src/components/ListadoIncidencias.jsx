@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { refreshTokenIfNeeded } from '../utils/auth';
+import API_BASE from '../utils/config';
 
 function ListadoIncidencias({ usuario }) {
   const [incidencias, setIncidencias] = useState([]);
@@ -8,8 +9,8 @@ function ListadoIncidencias({ usuario }) {
   useEffect(() => {
     const cargarIncidencias = async () => {
       try {
-        const token = await refreshTokenIfNeeded();  // ✅ usa refresh
-        const res = await fetch('http://localhost:8000/api/incidencias/', {
+        const token = await refreshTokenIfNeeded();
+        const res = await fetch(`${API_BASE}/incidencias/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -18,7 +19,7 @@ function ListadoIncidencias({ usuario }) {
         if (!res.ok) throw new Error('Error de autenticación');
         const data = await res.json();
         setIncidencias(data);
-      } catch (err) {
+      } catch {
         setError('No se pudieron cargar las incidencias.');
       }
     };
@@ -101,7 +102,7 @@ function ListadoIncidencias({ usuario }) {
         </>
       ) : (
         incidencias.length > 0
-          ? renderGrupo('Tus incidencias', 'nueva')  // o mostrar todas
+          ? renderGrupo('Tus incidencias', 'nueva')
           : <p className="text-muted mt-3">No tienes incidencias registradas.</p>
       )}
     </div>
