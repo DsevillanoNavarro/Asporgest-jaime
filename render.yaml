@@ -3,8 +3,12 @@ services:
     name: asprogest-backend
     env: python
     plan: free
-    buildCommand: "pip install -r requirements.txt && npm install --prefix frontend && npm run build --prefix frontend && python manage.py collectstatic --noinput"
-    startCommand: "gunicorn ASPROGEST.wsgi:application"
+    buildCommand: |
+      npm install --prefix frontend
+      npm run build --prefix frontend
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn ASPROGEST.wsgi:application
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -13,5 +17,4 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: RENDER
-        value: true
-    autoDeploy: true
+        value: yes

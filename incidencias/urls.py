@@ -2,7 +2,6 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 from .views import IncidenciaViewSet
-from django.views.generic import TemplateView
 
 
 router = DefaultRouter()
@@ -18,6 +17,3 @@ urlpatterns = [
     path('api/', include(router.urls)),
 ]
 
-urlpatterns += [
-    path('', TemplateView.as_view(template_name='index.html')),
-]
