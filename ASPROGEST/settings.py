@@ -87,3 +87,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+
+TEMPLATES[0]['DIRS'] = [BASE_DIR / 'frontend' / 'build']
