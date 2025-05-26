@@ -5,8 +5,8 @@ import Navbar from './components/Navbar';
 import CrearIncidencia from './components/CrearIncidencia';
 import ListadoIncidencias from './components/ListadoIncidencias';
 import Administracion from './components/Administracion';
+import API_BASE from '../utils/config';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function App() {
   const [usuario, setUsuario] = useState(null);
