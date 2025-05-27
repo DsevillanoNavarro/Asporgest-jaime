@@ -18,4 +18,4 @@ services:
   - type: static
     name: frontend
     buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: "frontend/build"
+    staticPublishPath: frontend/build
