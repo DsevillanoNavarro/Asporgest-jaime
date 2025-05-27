@@ -1,4 +1,3 @@
-// src/utils/auth.js
 import API_BASE from './config';
 
 export async function refreshTokenIfNeeded() {
