@@ -88,7 +88,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-TEMPLATES[0]['DIRS'] = [BASE_DIR / 'frontend' / 'build']
-
 DEBUG = True
