@@ -3,7 +3,7 @@ services:
     name: asprogest-backend
     env: python
     plan: free
-    buildCommand: "./build_backend.sh"
+    buildCommand: "./build_react.sh"
     startCommand: gunicorn ASPROGEST.wsgi:application
     envVars:
       - key: DATABASE_URL
