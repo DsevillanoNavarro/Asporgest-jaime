@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { refreshTokenIfNeeded, getAccessToken } from './utils/auth';
+import { refreshTokenIfNeeded } from './utils/auth';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import CrearIncidencia from './components/CrearIncidencia';
