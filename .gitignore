@@ -40,6 +40,3 @@ uploads/
 
 # Compilados y cachés de Django
 *.~undo-tree~
-
-# Carpeta de compilación de React
-/frontend/build/
