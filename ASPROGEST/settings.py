@@ -44,7 +44,9 @@ ROOT_URLCONF = 'ASPROGEST.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend' / 'build'],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'frontend/build'),
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,7 +74,9 @@ else:
     }
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'frontend' / 'build' / 'static']
+STATICFILES_DIRS = [
+            os.path.join(BASE_DIR, 'frontend/build/static'),
+            ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
