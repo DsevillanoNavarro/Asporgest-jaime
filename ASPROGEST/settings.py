@@ -36,9 +36,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://asporgest-jaime.onrender.com/"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://asporgest-jaime.onrender.com"]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://asporgest-jaime.onrender.com/"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://asporgest-jaime.onrender.com"]
 
 ROOT_URLCONF = 'ASPROGEST.urls'
 
