@@ -3,7 +3,10 @@ services:
     name: asprogest-backend
     env: python
     plan: free
-    buildCommand: "./build_react.sh"
+    buildCommand: |
+      ./build_react.sh
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
     startCommand: gunicorn ASPROGEST.wsgi:application
     envVars:
       - key: DATABASE_URL
@@ -14,8 +17,3 @@ services:
         generateValue: true
       - key: RENDER
         value: yes
-
-  - type: static
-    name: frontend
-    buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: frontend/build
