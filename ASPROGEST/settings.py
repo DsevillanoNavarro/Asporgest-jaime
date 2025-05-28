@@ -88,4 +88,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-DEBUG = True
+#DEBUG = True
