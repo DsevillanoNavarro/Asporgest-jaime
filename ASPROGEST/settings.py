@@ -71,7 +71,7 @@ else:
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 
-STATIC_URL = BASE_DIR / 'static'
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'frontend' / 'build' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
